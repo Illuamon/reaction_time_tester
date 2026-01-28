@@ -33,6 +33,7 @@ while True:
             print("konec kola, vaše výsledky: ")
             print(round_results_list)
 
+            #storing into a file
             with open(storage_file_results, "a") as file:
                 time = datetime.datetime.now()
                 file.write(f"{time} \n")
@@ -46,3 +47,5 @@ while True:
         else: #zaznamenej vysledek do listu
             round_results_list.append(decoded_packet.replace("\r\n", ""))
     
+
+
