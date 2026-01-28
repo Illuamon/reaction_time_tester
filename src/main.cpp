@@ -9,7 +9,7 @@ const int buzzerPin = 7;
 const int startButtonPin = 10;  
 
 const int frequency = 220;
-const int maxTurns = 10;
+const int maxTurns = 5;
 
 int buttonState = 0;
 int startButtonState = 0;
@@ -35,7 +35,7 @@ void runTurn(){
   // začátek kola
   buttonState = digitalRead(buttonPin);
 
-  Serial.println("start");
+  Serial.println(">start");
   start_time = micros();
   
   // náhodně urči jestli zazní buzzer nebo se rozsvítí ledka
@@ -55,9 +55,8 @@ void runTurn(){
   // počítání reakční doby
   end_time = micros();
   difference = (end_time - start_time);
-  Serial.println(turnNo);
-  Serial.println("rozdíl v milisekundách:");
-  Serial.println(difference  / 1000);
+  Serial.println(">rozdíl v milisekundách:");
+  Serial.println(difference / 1000);
   
   //konec kola - vypnout + počkat
   digitalWrite(ledPin, LOW);
@@ -77,7 +76,7 @@ void loop() {
       while (turnNo <= maxTurns){
           runTurn();
       } 
-      Serial.println("maximální počet kol dosažen");
+      Serial.println("<maximální počet kol dosažen");
   }
   turnNo = 1;
 }
