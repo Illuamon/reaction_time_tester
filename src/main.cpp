@@ -19,6 +19,7 @@ unsigned long start_time;
 unsigned long end_time;
 float difference;
 
+// toto jsou hranice pro random na ledku a buzzer
 const int upper_bound = 2;
 const int lower_bound = 1;
 
@@ -35,18 +36,19 @@ void runTurn(){
   // začátek kola
   buttonState = digitalRead(buttonPin);
 
-  Serial.println(">start");
   start_time = micros();
   
   // náhodně urči jestli zazní buzzer nebo se rozsvítí ledka
-  int value = rand() % (upper_bound - lower_bound + 1) + lower_bound; 
+  int rand_val = rand() % (upper_bound - lower_bound + 1) + lower_bound; 
+  // náhodně urči delay před dalším kolem
+  int rand_val_delay = rand() % (8000 - 1000 + 1) + 1000;
 
   while (buttonState == 0){
-    if (value == 1){
+    if (rand_val == 1){
       digitalWrite(ledPin, HIGH);
       buttonState = digitalRead(buttonPin);
     }
-    if (value == 2){
+    if (rand_val == 2){
       tone(buzzerPin, frequency);
       buttonState = digitalRead(buttonPin);
     }
@@ -63,11 +65,12 @@ void runTurn(){
   noTone(buzzerPin);
   
   turnNo += 1;
-  delay(2000);
+  delay(rand_val_delay); 
 }
 
 void loop() {
   startButtonState = digitalRead(startButtonPin);
+  Serial.println(">start");
   
   // pokud se zmáčkl start button začni
   if (startButtonState == 1){
