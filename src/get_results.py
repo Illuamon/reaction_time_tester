@@ -11,7 +11,6 @@ def get_avg(lst):
     avg = sum / len(lst)
     return round(avg, 2)
 
-
 def get_round_result_and_avg(round_no, path_result_storage):
     #hodí se pro starší záznamy
     #return tuple (list vysledku, prumer)
@@ -39,10 +38,6 @@ def get_all_time_avg(path_result_storage):
         if line.startswith("["):
             line = get_list_from_line(line)
             results.extend(line)
-        else:
-            pass
-
+    
     return get_avg(results)
 
-
-print(get_all_time_avg(path_result_storage="src/results_list_storage.txt"))

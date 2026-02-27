@@ -6,13 +6,13 @@ void runTurn();
 const int buttonPin = 2;  
 const int ledPin = 13; 
 const int buzzerPin = 7; 
-const int startButtonPin = 10;  
+//const int startButtonPin = 10;  
 
 const int frequency = 220;
 const int maxTurns = 5;
 
 int buttonState = 0;
-int startButtonState = 0;
+//int startButtonState = 0;
 int turnNo = 0;
 
 unsigned long start_time;
@@ -29,7 +29,7 @@ void setup() {
   pinMode(ledPin, OUTPUT);
   pinMode(buttonPin, INPUT);
   pinMode(buzzerPin, OUTPUT);
-  pinMode(startButtonPin, INPUT);
+  //pinMode(startButtonPin, INPUT);
 }
 
 void runTurn(){
@@ -69,11 +69,11 @@ void runTurn(){
 }
 
 void loop() {
-  startButtonState = digitalRead(startButtonPin);
+  //startButtonState = digitalRead(startButtonPin);
   Serial.println(">start");
   
   // pokud se zmáčkl start button začni
-  if (startButtonState == 1){
+  if (Serial.readString() == "start"){ //startButtonState == 1
       delay(1000);
       // dokud se nedosáhne maximálního počtu kol, spouštěj další kola
       while (turnNo <= maxTurns){

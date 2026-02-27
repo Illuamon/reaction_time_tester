@@ -5,3 +5,4 @@
 .vscode/ipch
 src/results_list_storage.txt
 reactiontestermain.txt
+src/__pycache__ 

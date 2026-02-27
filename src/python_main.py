@@ -1,7 +1,9 @@
 import serial.tools.list_ports
 import datetime
+import tkinter as tk
+from get_results import get_avg
 
-#This is the part where we talk with arduino
+#Nastavení komunikace s arduinem
 serial_inst = serial.Serial()
 '''
 ports = serial.tools.list_ports.comports()
@@ -11,46 +13,54 @@ for port in ports:
     list_of_ports.append(str(port))
     print(str(port)) 
 '''
-
 serial_inst.baudrate = 9600
 serial_inst.port = "COM5" #toto se muze pozdeji zmenit, me to ale staci takto, pokud to chci nekam posilat tak je to treba zmenit na input
 serial_inst.open()
 
-round_results_list = []
-storage_file_results = "src/results_list_storage.txt"
+messages = ["Právě se nic neděje", "Arduino testuje...", "Reakční doba: "]
 
-while True:
-    #pokud arduino neco poslalo
-    if serial_inst.in_waiting:
-        packet = serial_inst.readline()
-        decoded_packet = packet.decode('utf') #poslana informace do citelne podoby
-        print(decoded_packet)
-    
-        if decoded_packet.startswith("<"):
-            #pokud kolo skoncilo tak printni vysledky a taky
-            #je dej do textoveho souboru abychom je mohli pozdeji pouzit
-            print("-----------------------------------")
-            print("konec kola, vaše výsledky: ")
-            print(round_results_list)
-            sum = 0
-            for num in round_results_list:
-                sum += num
-            avg = sum / len(round_results_list)
-            print(f"průměr: {avg}")
+def round(serial_inst):
+    serial_inst.write(b'start') #řekni arduino že má začít měřit
 
-            #storing into a file
-            with open(storage_file_results, "a") as file:
-                time = datetime.datetime.now()
-                file.write(f"\n{time}\n")
-                file.write(str(round_results_list))
-                file.close()
+    main_text.config(frame, text=messages[1]) #oznam na obrazovce že arduino měří
 
-            round_results_list = []
+    storage_file_results = "src/results_list_storage.txt"
+    end = False
+    round_results_list = []
 
-        elif decoded_packet.startswith(">"):
-            pass      
-        else: #zaznamenej vysledek do listu
-            round_results_list.append(decoded_packet.replace("\r\n", ""))
-    
+    while end is False:
+        #pokud arduino neco poslalo
+        if serial_inst.in_waiting:
+            packet = serial_inst.readline()
+            decoded_packet = packet.decode('utf') #poslana informace do citelne podoby
+        
+            if decoded_packet.startswith("<"):
+                #je dej do textoveho souboru abychom je mohli pozdeji pouzit
+                main_text.config(frame, text=messages[2] + get_avg(round_results_list)) #oznam výsledek (průměr)
 
-#ted je potreba realne accesnout tu txt filu a z ni ty data brat a pak je vyhodnocovat
+                #ukládání dat do souboru
+                with open(storage_file_results, "a") as file:
+                    time = datetime.datetime.now()
+                    file.write(f"\n{time}\n")
+                    file.write(str(round_results_list))
+                    file.close()
+
+                round_results_list = []
+                end = True
+
+            elif decoded_packet.startswith(">"):
+                pass      
+            else: #zaznamenej vysledek do listu
+                round_results_list.append(decoded_packet.replace("\r\n", ""))
+
+#nastavení tkinteru (GUI)
+root = tk.Tk()
+root.title("Tester reakční doby")
+frame = tk.Frame(root, padding=10)
+frame.grid()
+
+main_text = tk.Label(frame, text=messages[0]).grid(column=0, row=0)
+start_button = tk.Button(frame, text="Start", command=lambda: round(serial_inst)).grid(column=0, row=1)
+
+
+tk.mainloop()
