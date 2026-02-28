@@ -11,4 +11,4 @@ Integral part of this project is an arduino. You will need:
 
 I organised my breadboard this way:  
 
-![breadboard](https://imgur.com/a/8vhAEhM.png)
+![breadboard](breadboard_setup.png)
