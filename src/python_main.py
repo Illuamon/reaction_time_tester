@@ -14,15 +14,13 @@ for port in ports:
     print(str(port)) 
 '''
 serial_inst.baudrate = 9600
-serial_inst.port = "COM5" #toto se muze pozdeji zmenit, me to ale staci takto, pokud to chci nekam posilat tak je to treba zmenit na input
+serial_inst.port = "COM6" #toto se muze pozdeji zmenit, me to ale staci takto, pokud to chci nekam posilat tak je to treba zmenit na input
 serial_inst.open()
 
 messages = ["Právě se nic neděje", "Arduino testuje...", "Reakční doba: "]
 
 def round(serial_inst):
     serial_inst.write(b'start') #řekni arduino že má začít měřit
-
-    main_text.config(frame, text=messages[1]) #oznam na obrazovce že arduino měří
 
     storage_file_results = "src/results_list_storage.txt"
     end = False
@@ -36,7 +34,7 @@ def round(serial_inst):
         
             if decoded_packet.startswith("<"):
                 #je dej do textoveho souboru abychom je mohli pozdeji pouzit
-                main_text.config(frame, text=messages[2] + get_avg(round_results_list)) #oznam výsledek (průměr)
+                main_text.config(text=f"{messages[2]}{get_avg(round_results_list)}") #oznam výsledek (průměr)
 
                 #ukládání dat do souboru
                 with open(storage_file_results, "a") as file:
@@ -53,14 +51,23 @@ def round(serial_inst):
             else: #zaznamenej vysledek do listu
                 round_results_list.append(decoded_packet.replace("\r\n", ""))
 
+def start_round(serial_inst):
+    #tahle fce je potřeba, aby se zobrazila zpráva o tom že arduino testuje
+    main_text.config(text=messages[1]) #oznam na obrazovce že arduino měří
+    root.after(10, lambda: round(serial_inst))
+
 #nastavení tkinteru (GUI)
+def_font = (12)
 root = tk.Tk()
+#root.geometry("400x200")
 root.title("Tester reakční doby")
-frame = tk.Frame(root, padding=10)
+frame = tk.Frame(root, pady=20)
 frame.grid()
 
-main_text = tk.Label(frame, text=messages[0]).grid(column=0, row=0)
-start_button = tk.Button(frame, text="Start", command=lambda: round(serial_inst)).grid(column=0, row=1)
+main_text = tk.Label(frame, text=messages[0], font=def_font, padx=20, pady=15)
+main_text.grid(column=0, row=0)
+start_button = tk.Button(frame, text="Start", command=lambda: start_round(serial_inst), font=def_font)
+start_button.grid(column=0, row=1)
 
 
 tk.mainloop()

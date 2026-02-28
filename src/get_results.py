@@ -5,6 +5,7 @@ def get_list_from_line(line):
 
 def get_avg(lst):
     #nechci full float proto zaokrouhluju
+    lst = list(map(float, lst))
     sum = 0
     for num in lst:
         sum += num
