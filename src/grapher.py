@@ -1,1 +1,0 @@
-#tady budou pomocné fce ke kreslení grafů atd.
