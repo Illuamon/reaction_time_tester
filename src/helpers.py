@@ -45,3 +45,4 @@ def get_all_time_avg(path_result_storage):
     
     return get_avg(results)
 
+
