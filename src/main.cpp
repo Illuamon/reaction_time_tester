@@ -55,7 +55,7 @@ void runTurn(){
   end_time = micros();
   difference = (end_time - start_time);
   Serial.println(">rozdíl v milisekundách:");
-  Serial.println(difference / 1000);
+  Serial.println((difference / 1000) - 20); // tlačítko jde hůře zmáčknout, zpoždění odečteno
   
   //konec kola - vypnout + počkat
   digitalWrite(ledPin, LOW);

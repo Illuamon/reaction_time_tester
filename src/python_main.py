@@ -24,23 +24,26 @@ messages = ["Právě se nic neděje", "Arduino testuje...", "Reakční doba: "]
 
 def gen_graf_single_turn(results_list):
     #tato fce generuje graf z jednoho záznamu
+    results_list = list(map(float, results_list)) # radši převeď graf na floaty, může se stát že jsou to stringy
+    avg = get_avg(results_list)
     global canvas
     num_of_rounds = [i for i in range(1, len(results_list) + 1)] # abych mohla udělat graf musím očíslovat kola
 
+    # používám try except, aby když se něco pokazí nevypnul se celý program
     try:
-        fig, ax = plt.subplots(figsize=(13.5, 6))
+        fig, ax = plt.subplots()
+        colors = ['green' if result <= avg else 'blue' for result in results_list] # pokud je r.d. kratší než průměr tak je zelená jinak modrá
 
         # toto je nastavení grafu
-        ax.bar(num_of_rounds, results_list) # co je sloupec (pořadí v závislosti na reakčním čase)
+        bars = ax.bar(num_of_rounds, results_list, color=colors) # co je sloupec (pořadí na reakční době)
+        ax.bar_label(bars, padding=5) # ukaž hodnoty sloupců nad grafem
         ax.set_xticks(num_of_rounds) # osa x
         ax.set_xticklabels([str(num) for num in num_of_rounds]) # označení sloupců na ose x
-        ax.set_title(f'Reakční doba při jednotlivých měřeních') # název grafu
+        ax.set_title('Reakční doba při jednotlivých měřeních') # název grafu
         ax.set_xlabel('pořadí') # název osy x
         ax.set_ylabel('reakční doba') # název osy y
-        ax.grid(axis='y', linestyle='--', alpha=0.5) # udělá linky v grafu aby byl přehlednější
 
-        fig.text(0.76, 0.5, s="", fontsize=10, va='center')
-        plt.tight_layout(rect=(0, 0, 0.75, 1))
+        ax.grid(axis='y', linestyle='--', alpha=0.5) # udělá linky v grafu aby byl přehlednější
 
         # pokud existuje jiný graf tak ho smaž
         if canvas:
