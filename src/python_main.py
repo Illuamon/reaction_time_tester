@@ -1,7 +1,7 @@
 import serial.tools.list_ports
 import datetime
 import tkinter as tk
-from helpers import get_avg, get_list_from_line
+from helpers import get_avg, get_list_from_line, get_all_time_avg
 import matplotlib.pyplot as plt
 from settings import SERIAL_PORT, RESULTS_STRG_PATH
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -14,7 +14,7 @@ serial_inst.baudrate = 9600
 serial_inst.port = SERIAL_PORT # dá se předělat v settings.py 
 serial_inst.open()
 
-messages = ["Právě se nic neděje", "Arduino testuje...", "Reakční doba: "] 
+messages = ["Právě se nic neděje", "Arduino testuje...", "Reakční doba: ", "Průměrná reakční doba ze všech záznamů: "] 
 
 def gen_graph(results_list, time):
     #tato fce generuje graf z jednoho záznamu
@@ -37,7 +37,7 @@ def gen_graph(results_list, time):
         ax.set_xticklabels([str(num) for num in num_of_rounds]) # označení sloupců na ose x
         ax.set_title(f'Reakční doba při jednotlivých měřeních z {time}', pad=10) # název grafu
         ax.set_xlabel('pořadí') # název osy x
-        ax.set_ylabel('reakční doba') # název osy y
+        ax.set_ylabel('reakční doba v milisekundách') # název osy y
         ax.grid(axis='y', linestyle='--', alpha=0.5) # udělá linky v grafu aby byl přehlednější
 
         # pokud existuje jiný graf tak ho smaž
@@ -79,6 +79,7 @@ def round(serial_inst):
                     file.close()
                 
                 list_old_results() # aktualizuj list záznamů
+                all_time_avg_text.config(text=f"{messages[3]}{get_all_time_avg(round_results_list)}")
 
                 end = True # ukonči loop
 
@@ -117,7 +118,7 @@ def load_selected(event):
             f.close()
         results_list = get_list_from_line(results[(selected_index * 2) + 1]) # vezmi záznam pod datem
         gen_graph(results_list, time) # vygeneruj z toho graf
-        main_text.config(text=f"{messages[2]}{get_avg(results_list)}")
+        main_text.config(text=f"{messages[2]}{get_avg(results_list)}") # aktualizuj reakční dobu na aktuální záznam
         
 # nastavení tkinteru (GUI)
 def_font = (12)
@@ -129,8 +130,11 @@ canvas = None
 
 # nastavení textových polí
 main_text = tk.Label(frame, text=messages[0], font=def_font, pady=15) # textové pole
+all_time_avg_text = tk.Message(frame, text=f"{messages[3]}{get_all_time_avg(RESULTS_STRG_PATH)}", font=def_font) # zobrazí průměr napříč všemi záznamy
 errors_text = tk.Label(frame, text="", font=(10), pady=10) # textové pole pro zobrazení případných chyb
 list_label = tk.Label(frame, text="Historie záznamů", font=def_font, pady=15, padx=10)
+
+all_time_avg_text.grid(column=2, row=1, padx=(5, 10), pady=(10, 0))
 main_text.grid(column=2, row=0, padx=(5, 10))
 errors_text.grid(column=2, row=2, padx=(5, 10))
 list_label.grid(column=0, row=0, padx=(15, 5))
@@ -145,8 +149,9 @@ listbox_scrollbar = tk.Scrollbar(frame, orient="vertical", command=list_box.yvie
 list_box.configure(yscrollcommand=listbox_scrollbar.set)
 listbox_scrollbar.grid(column=1, row=1, sticky="ns", pady=10)
 
+# tlačítko
 start_button = tk.Button(frame, text="Start", command=lambda: start_round(serial_inst), font=def_font) # tlačítko start
-start_button.grid(column=2, row=1)
+start_button.grid(column=2, row=2)
 
 list_old_results() # aktualizuj list záznamů na začátku
-tk.mainloop()
+tk.mainloop() # spusť aplikaci
