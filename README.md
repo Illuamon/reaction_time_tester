@@ -19,7 +19,7 @@ I organised my breadboard this way:
 
 #### The app
 
-git clone https://github.com/you/reaction_time_tester
+git clone https://github.com/Illuamon/reaction_time_tester
 
 cd reaction_time_tester
 
