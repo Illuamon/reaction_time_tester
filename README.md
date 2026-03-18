@@ -1,6 +1,10 @@
-### Reaction Time Tester
+## Reaction Time Tester
+A simple reaction time testing app built with Python and arduino, with a visual interface using tkinter and matplotlib.
 
-Integral part of this project is an arduino. You will need:
+### Setup
+
+#### Arduino
+Integral part of this project is an arduino. Aside from an arduino you will need:
 
 - button
 - led
@@ -12,3 +16,20 @@ Integral part of this project is an arduino. You will need:
 I organised my breadboard this way:  
 
 ![breadboard](breadboard_setup.png)
+
+#### The app
+
+git clone https://github.com/you/reaction_time_tester
+
+cd reaction_time_tester
+
+python -m venv venv
+
+venv\Scripts\activate
+
+pip install -r requirements.txt
+
+### Run
+Install main.cpp into your arduino and then run python_main.py.
+
+You might also want to look at settings.py and set the correct port for the arduino.

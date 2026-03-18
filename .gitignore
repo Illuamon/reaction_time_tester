@@ -4,3 +4,4 @@ src/results_list_storage.txt
 reactiontestermain.txt
 src/__pycache__ 
 src/tests.py
+venv/
