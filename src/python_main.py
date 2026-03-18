@@ -79,7 +79,7 @@ def round(serial_inst):
                     file.close()
                 
                 list_old_results() # aktualizuj list záznamů
-                all_time_avg_text.config(text=f"{messages[3]}{get_all_time_avg(round_results_list)}")
+                all_time_avg_text.config(text=f"{messages[3]}{get_all_time_avg(RESULTS_STRG_PATH)}")
 
                 end = True # ukonči loop
 
@@ -130,24 +130,24 @@ canvas = None
 
 # nastavení textových polí
 main_text = tk.Label(frame, text=messages[0], font=def_font, pady=15) # textové pole
-all_time_avg_text = tk.Message(frame, text=f"{messages[3]}{get_all_time_avg(RESULTS_STRG_PATH)}", font=def_font) # zobrazí průměr napříč všemi záznamy
+all_time_avg_text = tk.Message(frame, text=f"{messages[3]}{get_all_time_avg(RESULTS_STRG_PATH)}", font=def_font, anchor="w", width=200) # zobrazí průměr napříč všemi záznamy
 errors_text = tk.Label(frame, text="", font=(10), pady=10) # textové pole pro zobrazení případných chyb
 list_label = tk.Label(frame, text="Historie záznamů", font=def_font, pady=15, padx=10)
 
-all_time_avg_text.grid(column=2, row=1, padx=(5, 10), pady=(10, 0))
+all_time_avg_text.grid(column=2, row=1, pady=(10, 0))
 main_text.grid(column=2, row=0, padx=(5, 10))
 errors_text.grid(column=2, row=2, padx=(5, 10))
 list_label.grid(column=0, row=0, padx=(15, 5))
 
 # list kde se zobrazí kliknutelné minulé záznamy
 list_box = tk.Listbox(frame, selectmode='single', height=23, width=23)
-list_box.grid(column=0, row=1, sticky="ns", padx=(10, 5))
+list_box.grid(column=0, row=1, sticky="ns", padx=(10, 5), pady=(0, 10), rowspan=2)
 list_box.bind("<<ListboxSelect>>", load_selected)
 
 # scrollbar k listu
 listbox_scrollbar = tk.Scrollbar(frame, orient="vertical", command=list_box.yview)
 list_box.configure(yscrollcommand=listbox_scrollbar.set)
-listbox_scrollbar.grid(column=1, row=1, sticky="ns", pady=10)
+listbox_scrollbar.grid(column=1, row=1, sticky="ns", pady=10, rowspan=2)
 
 # tlačítko
 start_button = tk.Button(frame, text="Start", command=lambda: start_round(serial_inst), font=def_font) # tlačítko start
