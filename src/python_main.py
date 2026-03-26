@@ -3,6 +3,7 @@ import datetime
 import tkinter as tk
 from helpers import get_avg, get_list_from_line, get_all_time_avg
 import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
 from settings import SERIAL_PORT, RESULTS_STRG_PATH
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -14,20 +15,25 @@ serial_inst.baudrate = 9600
 serial_inst.port = SERIAL_PORT # dá se předělat v settings.py 
 serial_inst.open()
 
+f = open(RESULTS_STRG_PATH, 'w')
+f.close()
+
 messages = ["Právě se nic neděje", "Arduino testuje...", "Reakční doba: ", "Průměrná reakční doba ze všech záznamů: "] 
 
-def gen_graph(results_list, time):
+def gen_graph(results_list, prompt_list, time):
     #tato fce generuje graf z jednoho záznamu
     results_list = list(map(float, results_list)) # radši převeď graf na floaty, může se stát že jsou to stringy
+    prompt_list = list(map(int, prompt_list))
     avg = get_avg(results_list)
     global canvas
     num_of_rounds = [i for i in range(1, len(results_list) + 1)] # abych mohla udělat graf musím očíslovat kola
+    legend_elements = [Patch(facecolor='indianred', label='LED'), Patch(facecolor='teal', label='buzzer')]
 
     # používám try except, aby když se něco pokazí nevypnul se celý program
     try:
         plt.close('all') # vymaž všechny minulé grafy abychom neplýtvali pamětí
         fig, ax = plt.subplots()
-        colors = ['green' if result <= avg else 'blue' for result in results_list] # pokud je r.d. kratší než průměr tak je zelená jinak modrá
+        colors = ['indianred' if prompt == 1 else 'teal' for prompt in prompt_list] # pokud je r.d. kratší než průměr tak je zelená jinak modrá
 
         # toto je nastavení grafu
         bars = ax.bar(num_of_rounds, results_list, color=colors) # co je sloupec (pořadí na reakční době)
@@ -38,6 +44,7 @@ def gen_graph(results_list, time):
         ax.set_title(f'Reakční doba při jednotlivých měřeních z {time}', pad=10) # název grafu
         ax.set_xlabel('pořadí') # název osy x
         ax.set_ylabel('reakční doba v milisekundách') # název osy y
+        ax.legend(handles=legend_elements, loc='upper left', ncols=2) #vytvoř legendu pro barvy led x buzzer
         ax.grid(axis='y', linestyle='--', alpha=0.5) # udělá linky v grafu aby byl přehlednější
 
         # pokud existuje jiný graf tak ho smaž
@@ -61,35 +68,40 @@ def round(serial_inst):
     storage_file_results = RESULTS_STRG_PATH # path k textovému souboru k ukládání dat
     end = False 
     round_results_list = []
+    prompt_list = [] #je to ledka nebo buzzer?
+    counter = 0
 
     while end is False:
         # pokud arduino neco poslalo
         if serial_inst.in_waiting:
             packet = serial_inst.readline()
             decoded_packet = packet.decode('utf') # poslaná informace převedená do čitelné podoby
-        
+                
             if decoded_packet.startswith("<"):
                 main_text.config(text=f"{messages[2]}{get_avg(round_results_list)}") #oznam výsledek (průměr) na obrazovce
 
                 # ukládání dat do souboru
                 with open(storage_file_results, "a") as file:
                     time = datetime.datetime.now()
-                    file.write(f"\n{time}\n")
-                    file.write(str(round_results_list))
+                    file.write(f"{time}\n")
+                    file.write(f"{str(round_results_list)}\n")
+                    file.write(f"{str(prompt_list)}\n")
                     file.close()
                 
                 list_old_results() # aktualizuj list záznamů
                 all_time_avg_text.config(text=f"{messages[3]}{get_all_time_avg(RESULTS_STRG_PATH)}")
 
                 end = True # ukonči loop
-
-            elif decoded_packet.startswith(">"):
-                pass      
+  
             else: # zaznamenej vysledek do listu (round results list)
-                round_results_list.append(decoded_packet.replace("\r\n", ""))
+                if counter % 2 == 0:
+                    round_results_list.append(decoded_packet.replace("\r\n", ""))
+                else:
+                    prompt_list.append(decoded_packet.replace("\r\n", "").replace("=", ""))
+                counter += 1
 
     # vygeneruj graf            
-    gen_graph(round_results_list, time)
+    gen_graph(round_results_list, prompt_list, time)
 
 def start_round(serial_inst):
     # tahle fce je potřeba, aby se zobrazila zpráva o tom že arduino testuje
@@ -104,7 +116,7 @@ def list_old_results():
         f.close()
     for line in results:
         # do listu dej jednotlivá data záznamů
-        if results.index(line) % 2 == 0:
+        if results.index(line) % 3 == 0:
             list_box.insert(tk.END, line.strip())
 
 def load_selected(event):
@@ -116,8 +128,9 @@ def load_selected(event):
         with open(RESULTS_STRG_PATH, "r") as f:
             results = f.readlines()
             f.close()
-        results_list = get_list_from_line(results[(selected_index * 2) + 1]) # vezmi záznam pod datem
-        gen_graph(results_list, time) # vygeneruj z toho graf
+        results_list = get_list_from_line(results[(selected_index * 3) + 1]) # vezmi záznam pod datem
+        prompt_list = get_list_from_line(results[(selected_index * 3) + 2])
+        gen_graph(results_list, prompt_list, time) # vygeneruj z toho graf
         main_text.config(text=f"{messages[2]}{get_avg(results_list)}") # aktualizuj reakční dobu na aktuální záznam
         
 # nastavení tkinteru (GUI)

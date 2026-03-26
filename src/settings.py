@@ -1,7 +1,7 @@
 import serial
 
-RESULTS_STRG_PATH = "src/results_list_storage.txt" 
-SERIAL_PORT = "COM5" # pokud neodpovídá port, je potřeba ho nastavit
+RESULTS_STRG_PATH = "src/results_new.txt" 
+SERIAL_PORT = "COM6" # pokud neodpovídá port, je potřeba ho nastavit
 
 def get_port_list():
     # jaký je správný se zjistí díky této fci

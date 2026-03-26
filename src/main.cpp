@@ -12,6 +12,7 @@ const int maxTurns = 5;
 
 int buttonState = 0;
 int turnNo = 0;
+int prompt;
 
 unsigned long start_time;
 unsigned long end_time;
@@ -23,6 +24,7 @@ const int lower_bound = 1;
 
 void setup() {
   Serial.begin(9600);
+  randomSeed(analogRead(A0)); //aby byli hodnoty opravdu náhodné, čte elektrický šum z nezapojeného pinu na arduinu
   
   pinMode(ledPin, OUTPUT);
   pinMode(buttonPin, INPUT);
@@ -36,26 +38,28 @@ void runTurn(){
   start_time = micros();
   
   // náhodně urči jestli zazní buzzer nebo se rozsvítí ledka
-  int rand_val = rand() % (upper_bound - lower_bound + 1) + lower_bound; 
+  int rand_val = random() % (upper_bound - lower_bound + 1) + lower_bound; 
   // náhodně urči delay před dalším kolem
-  int rand_val_delay = rand() % (8000 - 1000 + 1) + 1000;
+  int rand_val_delay = random() % (6500 - 1000 + 1) + 1000;
 
   while (buttonState == 0){
     if (rand_val == 1){
       digitalWrite(ledPin, HIGH);
       buttonState = digitalRead(buttonPin);
+      prompt = 1;
     }
     if (rand_val == 2){
       tone(buzzerPin, frequency);
       buttonState = digitalRead(buttonPin);
+      prompt = 0;
     }
   }
   
   // počítání reakční doby
   end_time = micros();
   difference = (end_time - start_time);
-  Serial.println(">rozdíl v milisekundách:");
-  Serial.println((difference / 1000) - 20); // tlačítko jde hůře zmáčknout, zpoždění odečteno
+  Serial.println((difference / 1000) - 10); // tlačítko jde hůře zmáčknout, zpoždění odečteno
+  Serial.println(prompt);
   
   //konec kola - vypnout + počkat
   digitalWrite(ledPin, LOW);
@@ -65,9 +69,7 @@ void runTurn(){
   delay(rand_val_delay); 
 }
 
-void loop() {
-  Serial.println(">start");
-  
+void loop() { 
   // pokud se zmáčkl start button začni
   if (Serial.readString() == "start"){
       delay(1000);

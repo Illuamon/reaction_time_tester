@@ -1,6 +1,7 @@
 .pio
 .vscode
 src/results_list_storage.txt
+src/results_new.txt
 reactiontestermain.txt
 src/__pycache__ 
 src/tests.py

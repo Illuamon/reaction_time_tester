@@ -20,9 +20,12 @@ def get_all_time_avg(path_result_storage):
         file_content = f.readlines() 
         f.close()
     
+    if not file_content:
+        return "Žádné záznamy"
+    
     results = []
-    for line in file_content:
-        if line.startswith("["):
+    for i, line in enumerate(file_content):
+        if i % 3 == 1:
             line = get_list_from_line(line)
             results.extend(line)
     
