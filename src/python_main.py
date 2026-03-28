@@ -15,7 +15,7 @@ serial_inst.baudrate = 9600
 serial_inst.port = SERIAL_PORT # dá se předělat v settings.py 
 serial_inst.open()
 
-f = open(RESULTS_STRG_PATH, 'w')
+f = open(RESULTS_STRG_PATH, 'a')
 f.close()
 
 messages = ["Právě se nic neděje", "Arduino testuje...", "Reakční doba: ", "Průměrná reakční doba ze všech záznamů: "] 
