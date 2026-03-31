@@ -38,9 +38,9 @@ void runTurn(){
   start_time = micros();
   
   // náhodně urči jestli zazní buzzer nebo se rozsvítí ledka
-  int rand_val = random() % (upper_bound - lower_bound + 1) + lower_bound; 
+  int rand_val = random(lower_bound, upper_bound + 1); 
   // náhodně urči delay před dalším kolem
-  int rand_val_delay = random() % (6500 - 1000 + 1) + 1000;
+  int rand_val_delay = random(1000, 7001);
 
   while (buttonState == 0){
     if (rand_val == 1){
