@@ -1,6 +1,6 @@
 import serial
 
-RESULTS_STRG_PATH = "src/results_new.txt" 
+RESULTS_STRG_PATH = "src/results_new2.txt" 
 SERIAL_PORT = "COM6" # pokud neodpovídá port, je potřeba ho nastavit
 
 def get_port_list():

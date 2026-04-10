@@ -19,17 +19,14 @@ I organised my breadboard this way:
 
 #### The app
 
-git clone https://github.com/Illuamon/reaction_time_tester
-
-cd reaction_time_tester
-
-python -m venv venv
-
-venv\Scripts\activate
-
-pip install -r requirements.txt
-
+```
+1) git clone https://github.com/Illuamon/reaction_time_tester
+2) cd reaction_time_tester
+3) python -m venv venv
+4) venv\Scripts\activate
+5) pip install -r requirements.txt
+```
 ### Run
-Install main.cpp into your arduino and then run python_main.py.
+Flash main.cpp into your arduino and then run python_main.py.
 
 You might also want to look at settings.py and set the correct port for the arduino.

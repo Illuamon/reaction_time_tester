@@ -1,5 +1,6 @@
 import serial.tools.list_ports
 import datetime
+import os
 import tkinter as tk
 from helpers import get_avg, get_list_from_line, get_all_time_avg
 import matplotlib.pyplot as plt
@@ -15,8 +16,9 @@ serial_inst.baudrate = 9600
 serial_inst.port = SERIAL_PORT # dá se předělat v settings.py 
 serial_inst.open()
 
-f = open(RESULTS_STRG_PATH, 'a')
-f.close()
+if os.path.exists(RESULTS_STRG_PATH) == False:
+    f = open(RESULTS_STRG_PATH, 'w')
+    f.close()
 
 messages = ["Právě se nic neděje", "Arduino testuje...", "Reakční doba: ", "Průměrná reakční doba ze všech záznamů: "] 
 
